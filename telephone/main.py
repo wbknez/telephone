@@ -6,6 +6,8 @@ formed from telephone contact lists used to search for information.
 """
 import sys
 
+from .server import server
+
 
 def main():
     """
@@ -13,7 +15,8 @@ def main():
 
     :return: An exit code.
     """
-    pass
+    server.port = 8521
+    server.launch()
 
 
 if __name__ == "__main__":
