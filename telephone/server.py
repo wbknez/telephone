@@ -21,7 +21,7 @@ def person_portrayal(person):
     :param person: The person to visualize.
     :return: A new portrayal.
     """
-    return {"Shape": "circle", "Filled": "true", "r": "0.5",
+    return {"Shape": "circle", "Filled": "true", "r": "0.5", "Layer": "0",
             "Color": "blue" if person.data else _STATE_COLORS[person.state]}
 
 
