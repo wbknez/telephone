@@ -78,6 +78,8 @@ class TelephoneModel(Model):
     def __getattr__(self, item):
         if item == "steps":
             return self.schedule.steps
+        elif item in self.params:
+            return self.params[item]
 
     def create_data_collector(self):
         """
