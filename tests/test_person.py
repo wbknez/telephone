@@ -44,15 +44,46 @@ class PersonTest(TestCase):
         self.person.set_busy()
         self.assertFalse(self.person.is_available())
 
+    def test_call_makes_both_busy(self):
+        self.person.call(self.contact)
+
+        self.assertTrue(self.contact.busy)
+        self.assertTrue(self.person.busy)
+
+    def test_call_correctly_updates_last_called(self):
+        self.person.last_dialed = -1
+        self.person.call(self.contact)
+
+        self.assertEqual(1, self.person.last_dialed)
+
     def test_report_back_bails_early_when_no_requester_exists(self):
         self.person.requester = -1
         self.person.state = Person.State.Reporting
 
-        self.person.report_back()
+        self.person.report_back(None)
         self.assertEqual(Person.State.Waiting, self.person.state)
 
+    def test_report_back_raises_exception_when_caller_does_not_know_data(self):
+        self.person.data = False
+        self.assertRaises(ValueError, self.person.report_back, self.contact)
+
     def test_report_back_succeeds_when_requester_does_not_know_data(self):
-        pass
+        self.contact.state = Person.State.Searching
+        self.person.data = True
+        self.person.requester = 1
+        self.person.state = Person.State.Reporting
+
+        self.assertFalse(self.contact.data)
+        self.assertEqual(Person.State.Searching, self.contact.state)
+
+        self.person.report_back(self.contact)
+
+        self.assertTrue(self.contact.busy)
+        self.assertTrue(self.contact.data)
+        self.assertEqual(Person.State.Reporting, self.contact.state)
+        self.assertTrue(self.person.busy)
+        self.assertEqual(-1, self.person.requester)
+        self.assertEqual(Person.State.Waiting, self.person.state)
 
     def test_respond_to_returns_false_when_data_is_unknown(self):
         self.person.data = False
