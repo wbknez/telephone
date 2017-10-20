@@ -19,7 +19,7 @@ def is_malicious(model):
     :param model: The model to use.
     :return: Whether or not a generated person is malicious.
     """
-    return random() < model.params["malicious_prob"]
+    return random() < model.malicious_prob
 
 
 def is_knowledgeable(model, malicious):
@@ -37,7 +37,7 @@ def is_knowledgeable(model, malicious):
     :return: Whether or not a generated person already knows about a bit of
     data.
     """
-    return False if malicious else random() < model.params["data_prob"]
+    return False if malicious else random() < model.data_prob
 
 
 def initial_state(model, data):
@@ -52,7 +52,7 @@ def initial_state(model, data):
     :param data: If the person already has data knowledge.
     :return: The type of state a person should be in.
     """
-    if data or model.params["search_prob"] <= random():
+    if data or model.search_prob <= random():
         return Person.State.Waiting
     return Person.State.Searching
 
@@ -99,9 +99,9 @@ class TelephoneModel(Model):
         """
         current_id = 0
 
-        for h in reversed(range(self.params["height"])):
-            for w in range(self.params["width"]):
-                if current_id >= self.params["num_people"]:
+        for h in reversed(range(self.height)):
+            for w in range(self.width):
+                if current_id >= self.num_people:
                     return
                 person = self.create_person(current_id)
 
