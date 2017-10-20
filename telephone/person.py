@@ -183,7 +183,8 @@ class Person(Agent):
 
         :return: Whether or not this person knows an arbitrary bit of data.
         """
-        if not self.data and self.requester == -1:
+        if not self.data and self.requester == -1 and \
+                not self.state == Person.State.Searching:
             self.state = Person.State.Searching
             self.requester = caller.unique_id
 
@@ -199,7 +200,7 @@ class Person(Agent):
             request, if any, causing this person to search.
             2. The contact cannot be the last person this person called.
         """
-        choices = filter(self.filter_predicate, self.contacts)
+        choices = list(filter(self.filter_predicate, self.contacts))
         if choices:
             to_call = random.choice(choices)
             self.call(self.model.people[to_call])
