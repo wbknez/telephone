@@ -30,7 +30,7 @@ def person_portrayal(person):
 
 _PARAMS = {
     "seed": int(time.time()),
-    "num_people": UserSettableParameter("slider", "Number of Agents", 100, 2,
+    "num_people": UserSettableParameter("slider", "Number of People", 225, 2,
                                         225, 1),
     "data_prob": UserSettableParameter("slider", "Probability of Initial "
                                                  "Knowledge",
@@ -41,6 +41,18 @@ _PARAMS = {
     "search_prob": UserSettableParameter("slider", "Probability of Initial "
                                                    "Search Desire",
                                          0.05, 0.0, 1.0, 0.01),
+    "mu": UserSettableParameter("slider", "Average Number of People in a "
+                                          "Social Network (μ)",
+                                10, 0, 20, 1),
+    "sigma": UserSettableParameter("slider", "Standard Deviation of Social "
+                                             "Network (σ)",
+                                   0, 0, 10, 0.1),
+    "recip_prob": UserSettableParameter("slider", "Probability of "
+                                                  "Reciprocation",
+                                        1.0, 0.0, 1.0, 0.01),
+    "require_mutual": UserSettableParameter("checkbox", "Mutal Contact "
+                                                        "is Required",
+                                            False),
     "width": 15,
     "height": 15
 }
