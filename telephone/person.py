@@ -65,6 +65,7 @@ class Person(Agent):
         self.data = data
         self.last_dialed = -1
         self.malicious = malicious
+        self.max_contacts = 0
         self.requester = -1
         self.state = state
         self.timestamp = 0
