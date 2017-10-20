@@ -97,8 +97,8 @@ class TelephoneModel(Model):
         """
         current_id = 0
 
-        for w in range(self.params["width"]):
-            for h in range(self.params["height"]):
+        for h in reversed(range(self.params["height"])):
+            for w in range(self.params["width"]):
                 if current_id >= self.params["num_people"]:
                     return
                 person = self.create_person(current_id)
