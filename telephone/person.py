@@ -11,6 +11,7 @@ from mesa import Agent
 def contacts_filter(contact):
     """
 
+
     :param contact:
     :return:
     """
@@ -102,7 +103,8 @@ class Person(Agent):
 
     def finish_search(self):
         """
-
+        Conceptually "finishes" a search by resetting this person's state to
+        simply waiting and removing the original requester.
         """
         self.requester = -1
         self.state = Person.State.Waiting
@@ -119,8 +121,10 @@ class Person(Agent):
 
     def receive_update_from(self, caller):
         """
+        Conceptually, "receives an update" from the specified caller that
+        notifies this person of the true value of an arbitrary piece of data.
 
-        :param caller:
+        :param caller: The person performing the notification.
         """
         if not caller.data:
             raise ValueError("Contact does not know the bit of data.")
@@ -133,17 +137,20 @@ class Person(Agent):
         Attempts to call and inform the original person who asked about the
         data what it actually is.
 
+        There are two situations where the specified callee is not informed:
+            1. If this person is malicious.
+            2. If the callee does not exist.
+
         :param callee: The person to report back to.
         """
-        if callee is None:
-            self.state = Person.State.Waiting
-            return
-
-        if callee.is_available():
-            callee.set_busy()
-            callee.receive_update_from(self)
-            self.set_busy()
+        if callee is None or self.malicious:
             self.finish_search()
+        else:
+            if callee.is_available():
+                callee.set_busy()
+                callee.receive_update_from(self)
+                self.set_busy()
+                self.finish_search()
 
     def respond_to(self, caller):
         """
