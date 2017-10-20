@@ -112,6 +112,7 @@ class TelephoneModel(Model):
 
                 self.grid.place_agent(person, (w, h))
                 self.people.append(person)
+                self.schedule.add(person)
                 current_id += 1
 
     def create_person(self, unique_id):
