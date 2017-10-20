@@ -93,6 +93,10 @@ class Person(Agent):
         self.data = other.respond_to(self)
         self.last_dialed = other.unique_id
 
+        if self.data:
+            self.state = Person.State.Reporting if not self.requester == -1 \
+                else Person.State.Waiting
+
     def check_availability(self):
         """
         Checks whether or not this person's busy state is accurate for the
@@ -150,7 +154,8 @@ class Person(Agent):
             raise ValueError("Contact does not know the bit of data.")
 
         self.data = True
-        self.state = Person.State.Reporting
+        self.state = Person.State.Reporting if not self.requester == -1 else \
+            Person.State.Waiting
 
     def report_back(self, callee):
         """
