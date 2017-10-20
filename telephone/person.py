@@ -8,19 +8,10 @@ import numpy as np
 from mesa import Agent
 
 
-def contacts_filter(contact):
-    """
-
-
-    :param contact:
-    :return:
-    """
-    pass
-
-
 class Person(Agent):
     """
-
+    Represents a single person, or agent, in a simulation about information
+    flow through a population's composite social network.
 
     Attributes:
         contacts (numpy.array): This person's social network.
@@ -31,7 +22,7 @@ class Person(Agent):
     @unique
     class State(Enum):
         """
-
+        Represents the different states a person may be in.
         """
 
         Reporting = 0
@@ -73,9 +64,9 @@ class Person(Agent):
     def __eq__(self, other):
         if isinstance(other, Person):
             return np.array_equal(self.contacts, other.contacts) and \
-                     self.busy == other.busy and self.data == other.data and \
-                     self.last_dialed == other.last_dialed and \
-                     self.malicious == other.malicious
+                   self.busy == other.busy and self.data == other.data and \
+                   self.last_dialed == other.last_dialed and \
+                   self.malicious == other.malicious
         return NotImplemented
 
     def __ne__(self, other):
@@ -118,6 +109,24 @@ class Person(Agent):
         """
         self.requester = -1
         self.state = Person.State.Waiting
+
+    def filter_predicate(self, contact):
+        """
+        Returns whether or not the specified contact is available for a call.
+
+        The three rules that govern this process are:
+            1. A contact cannot be called twice in a row.
+            2. The original person who sparked this person's search cannot be
+            contacted unless this person is reporting the answer.
+            3. A contact must not already be engaged in a call with someone
+            else.
+
+        :param contact: The person to check.
+        :return: Whether or not a contact is available for a call.
+        """
+        return not contact.unique_id == self.last_dialed and \
+               not contact.unique_id == self.requester and \
+               contact.is_available()
 
     def is_available(self):
         """
@@ -189,9 +198,10 @@ class Person(Agent):
             request, if any, causing this person to search.
             2. The contact cannot be the last person this person called.
         """
-        choices = filter(contacts_filter, self.contacts)
+        choices = filter(self.filter_predicate, self.contacts)
         if choices:
-            self.call(random.choice(choices))
+            to_call = random.choice(choices)
+            self.call(self.model.people[to_call])
 
     def set_busy(self):
         """
