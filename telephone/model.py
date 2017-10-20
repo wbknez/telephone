@@ -7,6 +7,7 @@ from mesa import Model
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
+from .network_gen import NetworkGenerator
 from .person import Person
 
 
@@ -89,13 +90,16 @@ class TelephoneModel(Model):
 
     def create_networks(self):
         """
-
+        Creates a social network for each person generated for this simulation.
         """
-        pass
+        generator = NetworkGenerator(self.num_people)
+
+        for person in self.people:
+            generator.generate_for(person, self)
 
     def create_people(self):
         """
-
+        Creates the population of people for this simulation.
         """
         current_id = 0
 
@@ -110,6 +114,15 @@ class TelephoneModel(Model):
                 current_id += 1
 
     def create_person(self, unique_id):
+        """
+        Creates a new person for this simulation, using user-specified
+        parameters to determine whether the person will be malicious,
+        have initial knowledge of a bit of data, or be searching for the data
+        instead.
+
+        :param unique_id: The unique identifier to use.
+        :return: A new person.
+        """
         person = Person(unique_id, self)
 
         person.malicious = is_malicious(self)
