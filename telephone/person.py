@@ -110,7 +110,7 @@ class Person(Agent):
         self.requester = -1
         self.state = Person.State.Waiting
 
-    def filter_predicate(self, contact):
+    def filter_predicate(self, contact_id):
         """
         Returns whether or not the specified contact is available for a call.
 
@@ -121,9 +121,10 @@ class Person(Agent):
             3. A contact must not already be engaged in a call with someone
             else.
 
-        :param contact: The person to check.
+        :param contact_id: The identifier of the person to check.
         :return: Whether or not a contact is available for a call.
         """
+        contact = self.model.people[contact_id]
         return not contact.unique_id == self.last_dialed and \
                not contact.unique_id == self.requester and \
                contact.is_available()
