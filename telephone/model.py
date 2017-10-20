@@ -3,6 +3,7 @@
 """
 from random import random
 
+import numpy as np
 from mesa import Model
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
@@ -125,6 +126,7 @@ class TelephoneModel(Model):
         """
         person = Person(unique_id, self)
 
+        person.max_contacts = np.random.normal(self.mu, self.sigma, 1)
         person.malicious = is_malicious(self)
         person.data = is_knowledgeable(self, person.malicious)
         person.state = initial_state(self, person.data)
