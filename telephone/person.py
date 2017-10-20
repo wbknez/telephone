@@ -1,10 +1,20 @@
 """
 
 """
+import random
 from enum import Enum, unique
 
 import numpy as np
 from mesa import Agent
+
+
+def contacts_filter(contact):
+    """
+
+    :param contact:
+    :return:
+    """
+    pass
 
 
 class Person(Agent):
@@ -42,9 +52,13 @@ class Person(Agent):
         for an answer.
         """
 
-    def __init__(self, unique_id, model, contacts, data=False,
+    def __init__(self, unique_id, model, contacts=None, data=False,
                  malicious=False, state=State.Waiting):
         super().__init__(unique_id, model)
+
+        if contacts is None:
+            contacts = []
+
         self.contacts = contacts
         self.busy = False
         self.data = data
@@ -65,13 +79,12 @@ class Person(Agent):
     def __ne__(self, other):
         return not self == other
 
-    def call(self, other, time_step):
+    def call(self, other):
         """
         Conceptually "calls" the specified person and asks them whether or
         not they have an arbitrary bit of data.
 
         :param other: The (other) person to call.
-        :param time_step:
         """
         self.set_busy()
         other.set_busy()
@@ -79,9 +92,20 @@ class Person(Agent):
         self.last_dialed = other.unique_id
 
     def check_availability(self):
+        """
+        Checks whether or not this person's busy state is accurate for the
+        current time step.
+        """
         if self.timestamp != self.model.steps:
             self.busy = False
             self.timestamp = self.model.steps
+
+    def finish_search(self):
+        """
+
+        """
+        self.requester = -1
+        self.state = Person.State.Waiting
 
     def is_available(self):
         """
@@ -93,15 +117,33 @@ class Person(Agent):
         self.check_availability()
         return not self.busy
 
-    def report_back(self):
-        if self.requester == -1:
+    def receive_update_from(self, caller):
+        """
+
+        :param caller:
+        """
+        if not caller.data:
+            raise ValueError("Contact does not know the bit of data.")
+
+        self.data = True
+        self.state = Person.State.Reporting
+
+    def report_back(self, callee):
+        """
+        Attempts to call and inform the original person who asked about the
+        data what it actually is.
+
+        :param callee: The person to report back to.
+        """
+        if callee is None:
             self.state = Person.State.Waiting
             return
 
-        if self.model.people[self.requester].is_available():
-            self.model.people[self.requester].busy = True
-            self.busy = True
-            self.state = Person.State.Waiting
+        if callee.is_available():
+            callee.set_busy()
+            callee.receive_update_from(self)
+            self.set_busy()
+            self.finish_search()
 
     def respond_to(self, caller):
         """
@@ -114,18 +156,30 @@ class Person(Agent):
 
         :return: Whether or not this person knows an arbitrary bit of data.
         """
-        if not self.data:
+        if not self.data and self.requester == -1:
             self.state = Person.State.Searching
             self.requester = caller.unique_id
 
         return self.data if not self.malicious else False
 
     def search_contacts(self):
-        pass
+        """
+        Searches this person's contacts for someone to call and ask about an
+        arbitrary bit of data; if someone is found, a call is initiated.
+
+        There are two rules that govern which contact is selected:
+            1. The contact cannot be the person who initially made the
+            request, if any, causing this person to search.
+            2. The contact cannot be the last person this person called.
+        """
+        choices = filter(contacts_filter, self.contacts)
+        if choices:
+            self.call(random.choice(choices))
 
     def set_busy(self):
         """
-
+        Sets this person's busy state to True if it is not already for the
+        current time step.
         """
         self.check_availability()
         self.busy = True
@@ -136,6 +190,8 @@ class Person(Agent):
         """
         if self.is_available():
             if self.state == Person.State.Reporting:
-                self.report_back()
+                callee = self.model.people[self.requester] \
+                    if not self.requester == -1 else None
+                self.report_back(callee)
             elif self.state == Person.State.Searching:
                 self.search_contacts()
