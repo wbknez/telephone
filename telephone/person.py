@@ -81,6 +81,15 @@ class Person(Agent):
     def __ne__(self, other):
         return not self == other
 
+    def add_contact(self, contact):
+        """
+        Adds the specified contact to this person's list of contacts (which
+        represents their social network).
+
+        :param contact: The person to add.
+        """
+        self.contacts.append(contact.unique_id)
+
     def call(self, other):
         """
         Conceptually "calls" the specified person and asks them whether or
