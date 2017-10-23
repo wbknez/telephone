@@ -13,7 +13,7 @@ class PersonTest(TestCase):
 
     class TestModel:
         """
-
+        A simple test model.
         """
 
         def __init__(self):
@@ -70,6 +70,27 @@ class PersonTest(TestCase):
     def test_report_back_succeeds_when_requester_does_not_know_data(self):
         self.contact.state = Person.State.Searching
         self.person.data = True
+        self.person.malicious = False
+        self.person.requester = 1
+        self.person.state = Person.State.Reporting
+
+        self.assertFalse(self.contact.data)
+        self.assertEqual(Person.State.Searching, self.contact.state)
+
+        self.person.report_back(self.contact)
+
+        self.assertTrue(self.contact.busy)
+        self.assertTrue(self.contact.data)
+        self.assertEqual(Person.State.Waiting, self.contact.state)
+        self.assertTrue(self.person.busy)
+        self.assertEqual(-1, self.person.requester)
+        self.assertEqual(Person.State.Waiting, self.person.state)
+
+    def test_report_back_propagates_up_search_network_correctly(self):
+        self.contact.requester = 2
+        self.contact.state = Person.State.Searching
+        self.person.data = True
+        self.person.malicious = False
         self.person.requester = 1
         self.person.state = Person.State.Reporting
 
