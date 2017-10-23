@@ -5,6 +5,7 @@ from random import random
 
 import numpy as np
 from mesa import Model
+from mesa.datacollection import DataCollector
 from mesa.space import SingleGrid
 from mesa.time import RandomActivation
 
@@ -67,7 +68,7 @@ class TelephoneModel(Model):
     def __init__(self, seed, **kwargs):
         super().__init__(seed)
         self.collector = None
-        self.data = {"waiting": 0, "reporting": 0, "searching": 0, "knowing": 0}
+        self.data = {"knowing": 0, "reporting": 0, "searching": 0, "waiting": 0}
         self.grid = SingleGrid(kwargs["width"], kwargs["height"], False)
         self.params = kwargs
         self.people = []
@@ -83,11 +84,37 @@ class TelephoneModel(Model):
         elif item in self.params:
             return self.params[item]
 
+    def compute_data(self):
+        """
+        Updates this simulation's internal data cache, computing all relevant
+        model data metrics for a single step.
+        """
+        self.data["knowing"] = self.data["reporting"] = \
+            self.data["searching"] = self.data["waiting"] = 0
+
+        for person in self.people:
+            if person.data:
+                self.data["knowing"] += 1
+            if person.is_reporting():
+                self.data["reporting"] += 1
+            elif person.is_searching():
+                self.data["searching"] += 1
+            else:
+                self.data["waiting"] += 1
+
     def create_data_collector(self):
         """
-
+        Creates the data collector used by this simulation to aggregate and
+        visualize model data over time.
         """
-        pass
+        self.collector = DataCollector(
+            model_reporters={
+                "knowing": lambda m: m.data["knowing"],
+                "not-knowing": lambda m: len(m.people) - m.data["knowing"],
+                "reporting": lambda m: m.data["reporting"],
+                "searching": lambda m: m.data["searching"],
+                "waiting": lambda m: m.data["waiting"]
+            })
 
     def create_networks(self):
         """
@@ -138,4 +165,6 @@ class TelephoneModel(Model):
         """
         Updates the simulation for a single time step.
         """
+        self.compute_data()
+        self.collector.collect(self)
         self.schedule.step()
