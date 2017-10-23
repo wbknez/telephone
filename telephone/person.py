@@ -143,6 +143,34 @@ class Person(Agent):
         self.check_availability()
         return not self.busy
 
+    def is_reporting(self):
+        """
+        Returns whether or not this person is trying to report their
+        knowledge of an arbitrary bit of data to the person who originally
+        asked them for it.
+
+        :return: Whether or not this person's state is reporting.
+        """
+        return self.state == Person.State.Reporting
+
+    def is_searching(self):
+        """
+        Returns whether or not this person is searching their contacts and
+        calling them in order to find an arbitrary bit of data.
+
+        :return: Whether or not this person's state is searching.
+        """
+        return self.state == Person.State.Searching
+
+    def is_waiting(self):
+        """
+        Returns whether or not this person is simply waiting (i.e. doing
+        nothing).
+
+        :return: Whether or not this person's state is waiting.
+        """
+        return self.state == Person.State.Waiting
+
     def receive_update_from(self, caller):
         """
         Conceptually, "receives an update" from the specified caller that
