@@ -4,7 +4,7 @@
 import time
 from mesa.visualization.ModularVisualization import ModularServer
 from mesa.visualization.UserParam import UserSettableParameter
-from mesa.visualization.modules import CanvasGrid
+from mesa.visualization.modules import CanvasGrid, ChartModule
 
 from .model import TelephoneModel
 from .person import Person
@@ -57,7 +57,17 @@ _PARAMS = {
     "height": 15
 }
 
+_KNOWING = {"Label": "knowing", "Color": "blue"}
+_NOT_KNOWING = {"Label": "not-knowing", "Color": "red"}
 
+_REPORTING = {"Label": "reporting", "Color": "green"}
+_SEARCHING = {"Label": "searching", "Color": "red"}
+_WAITING = {"Label": "waiting", "Color": "gray"}
+
+knowledge_chart = ChartModule([_KNOWING, _NOT_KNOWING],
+                       data_collector_name="collector")
+state_chart = ChartModule([_REPORTING, _SEARCHING, _WAITING],
+                          data_collector_name="collector")
 grid = CanvasGrid(person_portrayal, 15, 15, 500, 500)
-server = ModularServer(TelephoneModel, [grid],
+server = ModularServer(TelephoneModel, [grid, knowledge_chart, state_chart],
                        "Telephone Model", _PARAMS)
