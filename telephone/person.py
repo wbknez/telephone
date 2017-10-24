@@ -15,8 +15,15 @@ class Person(Agent):
 
     Attributes:
         contacts (numpy.array): This person's social network.
+        busy (bool): Whether or not this person is available for a call.
         data (bool): Whether or not this person knows the answer.
+        last_dialed (int): The identifier of the last person this person called.
+        last_dialed_time (int): The time step that the last call took place.
         malicious (bool): Whether or not this person is a bad actor.
+        max_contacts (int): The total number of contacts this person may have.
+        requester (int): The person that caused this person to begin searching.
+        state (Person.State): The current state of this person.
+        timestamp (int): The time step that this person's busy state was set.
     """
 
     @unique
