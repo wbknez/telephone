@@ -25,7 +25,8 @@ def person_portrayal(person):
     """
     return {"Shape": "circle" if not person.malicious else "rect",
             "Filled": "true", "r": "0.5", "Layer": "0", "w": "0.5", "h": "0.5",
-            "Color": "blue" if person.data else _STATE_COLORS[person.state]}
+            "Color": "blue" if person.data and person.is_waiting() else \
+                _STATE_COLORS[person.state]}
 
 
 _PARAMS = {
