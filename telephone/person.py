@@ -106,14 +106,6 @@ class Person(Agent):
             self.busy = False
             self.timestamp = self.model.steps
 
-    def finish_search(self):
-        """
-        Conceptually "finishes" a search by resetting this person's state to
-        simply waiting and removing the original requester.
-        """
-        self.requester = -1
-        self.state = Person.State.Waiting
-
     def filter_predicate(self, contact_id):
         """
         Returns whether or not the specified contact is available for a call.
@@ -132,6 +124,14 @@ class Person(Agent):
         return not contact.unique_id == self.last_dialed and \
                not contact.unique_id == self.requester and \
                contact.is_available()
+
+    def finish_search(self):
+        """
+        Conceptually "finishes" a search by resetting this person's state to
+        simply waiting and removing the original requester.
+        """
+        self.requester = -1
+        self.state = Person.State.Waiting
 
     def is_available(self):
         """
