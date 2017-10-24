@@ -1,5 +1,6 @@
 """
-
+Contains all classes and functions related to the core model used in this
+project.
 """
 from random import random
 
@@ -62,7 +63,10 @@ def initial_state(model, data):
 
 class TelephoneModel(Model):
     """
-
+    This simulation aims to explore the throughput of an information network
+    composed of a virtual population's aggregate social networks, wherein
+    individuals seek to use those they know in search of "knowledge" in the form
+    of a piece of boolean data.
     """
 
     def __init__(self, seed, **kwargs):
