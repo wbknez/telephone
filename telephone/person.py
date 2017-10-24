@@ -55,6 +55,7 @@ class Person(Agent):
         self.busy = False
         self.data = data
         self.last_dialed = -1
+        self.last_dialed_time = -1
         self.malicious = malicious
         self.max_contacts = 0
         self.requester = -1
@@ -92,6 +93,7 @@ class Person(Agent):
         other.set_busy()
         self.data = other.respond_to(self)
         self.last_dialed = other.unique_id
+        self.last_dialed_time = self.model.steps
 
         if self.data:
             self.state = Person.State.Reporting if not self.requester == -1 \
@@ -105,6 +107,17 @@ class Person(Agent):
         if self.timestamp != self.model.steps:
             self.busy = False
             self.timestamp = self.model.steps
+
+    def check_last_dialed(self):
+        """
+        Checks whether or not a sufficient amount of time has passed before
+        this person may call the last person they dialed again.
+        """
+        if not self.last_dialed == -1 and \
+                not self.model.last_dialed_threshold == -1:
+            if self.model.steps - self.last_dialed_time > \
+                    self.model.last_dialed_threshold:
+                self.last_dialed = -1
 
     def filter_predicate(self, contact_id):
         """
@@ -233,6 +246,7 @@ class Person(Agent):
             request, if any, causing this person to search.
             2. The contact cannot be the last person this person called.
         """
+        self.check_last_dialed()
         choices = list(filter(self.filter_predicate, self.contacts))
         if choices:
             to_call = random.choice(choices)
