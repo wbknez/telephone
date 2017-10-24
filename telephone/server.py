@@ -1,5 +1,6 @@
 """
-
+Contains all the classes and functions necessary to visualize the results of
+this project's agent-based simulation.
 """
 import time
 from mesa.visualization.ModularVisualization import ModularServer
