@@ -47,7 +47,9 @@ class PersonTest(TestCase):
 
     def test_check_last_dialed_timestamp_is_infinite_when_selected(self):
         self.model.last_dialed_threshold = -1
+        self.model.steps = 1000
         self.person.last_dialed = 1
+        self.person.last_dialed_time = 0
 
         self.person.check_last_dialed()
         self.assertEqual(1, self.person.last_dialed)
