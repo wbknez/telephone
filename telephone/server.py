@@ -42,6 +42,10 @@ _PARAMS = {
     "search_prob": UserSettableParameter("slider", "Probability of Initial "
                                                    "Search Desire",
                                          0.05, 0.0, 1.0, 0.01),
+    "last_dialed_threshold": UserSettableParameter("slider",
+                                                   "Delay Before Calling the "
+                                                   "Same Person Twice",
+                                                   -1, -1, 5, 1),
     "mu": UserSettableParameter("slider", "Average Number of People in a "
                                           "Social Network (μ)",
                                 10, 0, 20, 1),
