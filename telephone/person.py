@@ -1,5 +1,6 @@
 """
-
+Contains the classes and functions necessary to define the agents for this
+project's agent-based simulation.
 """
 import random
 from enum import Enum, unique

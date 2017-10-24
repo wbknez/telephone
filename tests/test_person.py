@@ -19,6 +19,7 @@ class PersonTest(TestCase):
         def __init__(self):
             self.people = []
             self.steps = 0
+            self.last_dialed_threshold = -1
 
     def setUp(self):
         self.model = PersonTest.TestModel()
@@ -43,6 +44,22 @@ class PersonTest(TestCase):
     def test_not_available_when_busy(self):
         self.person.set_busy()
         self.assertFalse(self.person.is_available())
+
+    def test_check_last_dialed_timestamp_is_infinite_when_selected(self):
+        self.model.last_dialed_threshold = -1
+        self.person.last_dialed = 1
+
+        self.person.check_last_dialed()
+        self.assertEqual(1, self.person.last_dialed)
+
+    def test_check_last_dialed_clears_correctly(self):
+        self.model.last_dialed_threshold = 1
+        self.model.steps = 2
+        self.person.last_dialed = 1
+        self.person.last_dialed_time = 0
+
+        self.person.check_last_dialed()
+        self.assertEqual(-1, self.person.last_dialed)
 
     def test_call_makes_both_busy(self):
         self.person.call(self.contact)
