@@ -1,5 +1,5 @@
 """
-
+Contains unit tests for verifying the correctness of agent interactions.
 """
 from unittest import TestCase
 
