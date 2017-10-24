@@ -20,7 +20,15 @@ agents may be designated as "malicious" and, regardless of their own
 knowledge of the data, will never prove helpful to anyone but themselves and 
 act as artificial barriers to information flow through the network.
 
-There are a number of configurable parameters that a user may use to 
+Individuals that call one another are considered "busy" for a single time 
+step; thus, only one call may be placed or received per person per step.  In 
+addition, the following rules apply:
+
+ * Individuals may not call the same person twice in a row (configurable).
+ * Individuals may not call the person who initially caused them to begin 
+ searching.  This is to ensure that information flows in a hierarchical manner.
+
+There are a number of configurable parameters that a user may utilize to 
 customize this project.  Aside from the standard initialization parameters 
 related to demography, the distribution of social contacts 
 may be either a maximum threshold or follow a normal distribution as desired.
